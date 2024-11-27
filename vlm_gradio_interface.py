@@ -8,7 +8,6 @@ import gradio as gr
 API_URL = "https://ai.api.nvidia.com/v1/vlm/nvidia/neva-22b"  
 API_KEY = "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"  
 
-
 def extract_frames_from_video(video_file, num_frames=16):
     video_clip = VideoFileClip(video_file)
     total_duration = video_clip.duration
@@ -16,7 +15,6 @@ def extract_frames_from_video(video_file, num_frames=16):
         video_clip.get_frame(i * total_duration / num_frames) for i in range(num_frames)
     ]
     return [Image.fromarray(frame) for frame in frames]
-
 
 def encode_image_to_base64(image_frame):
     buffer = BytesIO()
@@ -53,7 +51,6 @@ def query_action_detection_model(image_b64, action):
         print(f"API request failed: {response.status_code} - {response.text}")
     return False
 
-
 def compute_accuracy_for_video(video_frames, action):
     successful_detections = 0
     for frame in video_frames:
@@ -62,18 +59,15 @@ def compute_accuracy_for_video(video_frames, action):
             successful_detections += 1
     return (successful_detections / len(video_frames)) * 100  
 
-
 def analyze_video_action_accuracy(video1_file, video2_file, action):
     try:
         
         frames_from_video1 = extract_frames_from_video(video1_file)
         frames_from_video2 = extract_frames_from_video(video2_file)
 
-        
         accuracy_video1 = compute_accuracy_for_video(frames_from_video1, action)
         accuracy_video2 = compute_accuracy_for_video(frames_from_video2, action)
 
-        
         return (
             f"Video 1 '{action}' Detection Accuracy: {accuracy_video1:.2f}%",
             f"Video 2 '{action}' Detection Accuracy: {accuracy_video2:.2f}%"
@@ -81,39 +75,25 @@ def analyze_video_action_accuracy(video1_file, video2_file, action):
     except Exception as e:
         return f"Error occurred: {str(e)}", None
 
-
 with gr.Blocks() as app:
     gr.Markdown("# Action Detection with NVIDIA NEVA")
     gr.Markdown("Upload two videos and specify an action. This tool will calculate the action detection accuracy for each video.")
-
     
     with gr.Row():
-        video1 = gr.Video(label="Upload Real Video")  
-        video2 = gr.Video(label="Upload Synthetic Video")  
-
+        real_video = gr.Video(label="Upload Real Video")
+        synthetic_video = gr.Video(label="Upload Synthetic Video")
+    
     action = gr.Textbox(label="Specify Action (e.g., sitting, walking)")
-
     
-    gr.Markdown("## Trim")
     with gr.Row():
-        gr.Slider(label="Trim Video 1 Start Time", minimum=0, maximum=20, value=0, interactive=True)
-        gr.Slider(label="Trim Video 1 End Time", minimum=0, maximum=20, value=20)
-
-    with gr.Row():
-        gr.Slider(label="Trim Video 2 Start Time", minimum=0, maximum=20, value=0)
-        gr.Slider(label="Trim Video 2 End Time", minimum=0, maximum=20, value=20)
-
+        real_analysis = gr.Textbox(label="Real Video Analysis")
+        synthetic_analysis = gr.Textbox(label="Synthetic Video Analysis")
     
-    analyze_button = gr.Button("Analyze Videos")
-    with gr.Row():
-        real_video_analysis = gr.Textbox(label="Real Video Analysis")
-        synthetic_video_analysis = gr.Textbox(label="Synthetic Video Analysis")
-
-    
+    analyze_button = gr.Button("Analyze")
     analyze_button.click(
-        fn=analyze_video_action_accuracy,
-        inputs=[video1, video2, action],  
-        outputs=[real_video_analysis, synthetic_video_analysis],  
+        analyze_video_action_accuracy, 
+        inputs=[real_video, synthetic_video, action], 
+        outputs=[real_analysis, synthetic_analysis]
     )
 
 if __name__ == "__main__":
