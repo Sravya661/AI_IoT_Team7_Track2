@@ -137,7 +137,7 @@ These results show the system’s ability to detect actions accurately in both r
    - Gradio
 
 3. **API:**
-   - NVIDIA Neva-22B, obtained from **build.nvidia.com**.
+   - NVIDIA Neva-22B, obtained from **https://build.nvidia.com/explore/discover**.
 
 ---
 
