@@ -40,7 +40,7 @@ vlm_env\Scripts\activate
 Install Gradio and other dependencies:
 
 ```bash
-pip install gradio
+pip install gradio moviepy requests pillow numpy nvidia-api
 ```
 ### **3. To Run The Code:**
 Save the code in vlm_gradio_interface.py
